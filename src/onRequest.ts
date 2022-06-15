@@ -3,24 +3,30 @@ import { createUsers } from './methods/createUsers';
 import { deleteUsers } from './methods/deleteUsers';
 import { readUsers } from './methods/readUsers';
 import { updateUsers } from './methods/updateUsers';
+import { throwHttpError } from './utils/throwHttpError';
+import User, { UrlArgs } from './utils/types';
 
-export const onRequest = (req: http.IncomingMessage, res: http.ServerResponse): void => {
+export const onRequest = async (
+  data: Array<User>,
+  req: http.IncomingMessage,
+  res: http.ServerResponse,
+  [arg1, arg2, userId]: UrlArgs,
+): Promise<void> => {
   switch (req.method) {
     case 'GET':
-      readUsers(req, res);
+      await readUsers(data, req, res);
       break;
     case 'POST':
-      createUsers(req, res);
+      await createUsers(req, res);
       break;
     case 'PUT':
-      updateUsers(req, res);
+      await updateUsers(req, res);
       break;
     case 'DELETE':
-      deleteUsers(req, res);
+      await deleteUsers(req, res);
       break;
     default:
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ message: 'Server error, unknown method' }));
+      throwHttpError(res, 500, 'Server error, unknown method');
       break;
   }
 };

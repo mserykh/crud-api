@@ -1,4 +1,4 @@
-import { User } from './utils/types';
+import User from './utils/types';
 
 export const db: Array<User> = [
   { id: '1234560', name: 'User Name', age: 25, hobbies: [] },
