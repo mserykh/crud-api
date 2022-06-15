@@ -38,12 +38,12 @@ npm start:multi
 
 ### Endpoints
 
-`User` (`api/users` route)
+`User` (`api/user` route)
 
-- `GET` `api/users` - get all users
-- `GET` `api/users/${userId}` - get the user be id (eg. "/users/uuid")
-- `POST` `api/users` - create a new user
-- `PUT` `api/users/${userId}` - update a user
-- `DELETE` `api/users/${userId}` - delete a user
+- `GET` `api/user` - get all users
+- `GET` `api/user/${userId}` - get the user be id (eg. "/users/uuid")
+- `POST` `api/user` - create a new user
+- `PUT` `api/user/{userId}` - update a user
+- `DELETE` `api/user/${userId}` - delete a user
 
 ## Testing
