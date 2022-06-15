@@ -8,7 +8,7 @@ Simple CRUD API using in-memory database underneath.
 
 - [Download & Install Git](https://git-scm.com/downloads)
 - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager
--Install dependencies
+- Install dependencies
 
 ```bash
 npm install
