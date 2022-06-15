@@ -1,6 +1,6 @@
 import http from 'http';
 
-export const throwHttpError = (
+export const respondWithHttpError = (
   res: http.ServerResponse,
   statusCode: number,
   message: string,
