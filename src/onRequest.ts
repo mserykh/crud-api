@@ -14,7 +14,7 @@ export const onRequest = async (
 ): Promise<void> => {
   switch (req.method) {
     case 'GET':
-      await readUsers(data, req, res);
+      await readUsers(data, req, res, userId);
       break;
     case 'POST':
       await createUsers(req, res);
