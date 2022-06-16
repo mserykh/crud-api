@@ -4,7 +4,8 @@ export const respondWithHttpError = (
   res: http.ServerResponse,
   statusCode: number,
   message: string,
-): void => {
+): number => {
   res.statusCode = statusCode;
   res.end(JSON.stringify({ message }));
+  return statusCode;
 };

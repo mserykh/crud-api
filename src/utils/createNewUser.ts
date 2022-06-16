@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from 'uuid';
-import User from './types';
+import crypto from 'crypto';
+import { User } from './types';
 
 class NewUser {
   id: string;
@@ -8,12 +8,13 @@ class NewUser {
   hobbies: Array<string>;
 
   constructor(data: Omit<User, 'id'>) {
-    this.name = data.name;
+    this.name = data.username;
     this.age = data.age;
     this.hobbies = data.hobbies;
-    this.id = uuidv4();
+    this.id = crypto.randomUUID();
   }
 }
+
 export const createNewUser = (data: Omit<User, 'id'>): User => {
   const user = new NewUser(data);
   return user;
