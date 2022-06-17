@@ -1,5 +1,5 @@
 import http from 'http';
-import { createUser, getAllUsers, getUser, updateUser } from '../services/usersService';
+import { createUser, deleteUser, getAllUsers, getUser, updateUser } from '../services/usersService';
 import { Db, EndpointResult, User } from '../utils/types';
 
 export const readUsersEndpoint = async (db: Db): Promise<EndpointResult<Array<User>>> => {
@@ -65,17 +65,28 @@ export const updateUserEndpoint = async (db: Db, req: http.IncomingMessage, user
   };
 };
 
-// export const deleteUserEndpoint = async (db: Db, userId: string) => {
-//   const result = await deleteUser(db, userId);
+export const deleteUserEndpoint = async (db: Db, userId: string) => {
+  throwIfInvalid(userId);
 
-//   return {
-//     statusCode: result ? 204 : 404,
-//   };
-// };
+  const user = await getUser(db, userId);
+
+  if (user) {
+    await deleteUser(db, userId);
+    return {
+      statusCode: 204,
+    };
+  } else {
+    throwIfNotFound(userId);
+    return {
+      statusCode: 404,
+    };
+  }
+};
 
 function throwIfInvalid(userId: string) {
   // TODO: implement validation
 }
+
 function throwIfNotFound(userId: string) {
   // TODO: implement
 }

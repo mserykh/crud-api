@@ -3,7 +3,7 @@ import { readUsersEndpoint } from './resources/usersResource';
 import { readUserEndpoint } from './resources/usersResource';
 import { createUserEndpoint } from './resources/usersResource';
 import { updateUserEndpoint } from './resources/usersResource';
-// import { deleteUserEndpoint } from './resources/usersResource';
+import { deleteUserEndpoint } from './resources/usersResource';
 import { respondWithHttpError } from './utils/respondWithHttpError';
 import { parseRoute } from './utils/parseEndpoint';
 import { Db, EndpointResult } from './utils/types';
@@ -34,10 +34,10 @@ export const router = async (
     } else if (req.method === 'PUT' && userId) {
       endpointResult = await updateUserEndpoint(db, req, userId);
     } else if (req.method === 'DELETE' && userId) {
-      // endpointResult = await deleteUserEndpoint(req, res);
+      endpointResult = await deleteUserEndpoint(db, userId);
     } else {
-      return respondWithHttpError(res, 404, 'Not found');
-      // return respondWithHttpError(res, 405, 'HTTP method is not supported');
+      //return respondWithHttpError(res, 404, 'Not found');
+      return respondWithHttpError(res, 405, 'HTTP method is not supported');
     }
 
     return respondWithPayload(res, endpointResult);

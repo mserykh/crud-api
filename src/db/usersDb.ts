@@ -43,6 +43,14 @@ export const updateUserFromDb = (db: Db, data: User, userId: string): Promise<Us
   });
 };
 
+export const deleteUserFromDb = (db: Db, userId: string): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const updatedDb = db.users.filter((user) => user.id !== userId);
+    db.users = updatedDb;
+    resolve(true);
+  });
+};
+
 function throwDouledUser() {
   // TODO
 }
