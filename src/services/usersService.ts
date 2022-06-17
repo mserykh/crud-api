@@ -1,4 +1,4 @@
-import { createUserToDb, getAllUsersFromDb, getUserFromDb } from '../db/usersDb';
+import { createUserToDb, getAllUsersFromDb, getUserFromDb, updateUserFromDb } from '../db/usersDb';
 import { Db, User } from '../utils/types';
 
 export const getAllUsers = async (db: Db): Promise<Array<User>> => {
@@ -14,3 +14,13 @@ export const createUser = async (db: Db, data: User): Promise<User | null> => {
   const user = await createUserToDb(db, data);
   return user;
 };
+
+export const updateUser = async (db: Db, data: User, userId: string): Promise<User | null> => {
+  const user = await updateUserFromDb(db, data, userId);
+  return user;
+};
+
+// export const deleteUser = async (db: Db, data: User, userId: string): Promise<User | null> => {
+//   const user = await updateUserFromDb(db, data, userId);
+//   return user;
+// };

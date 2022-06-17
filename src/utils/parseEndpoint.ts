@@ -8,6 +8,6 @@ export const parseRoute = (url: string): EndpointArgs => {
     ? matches.groups
     : { api: '', users: '', userIdRaw: '' };
   const userId = userIdRaw ? userIdRaw.replace('/', '') : '';
-  console.log(api, users, userId);
+
   return [api, users, userId];
 };

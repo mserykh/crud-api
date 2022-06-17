@@ -2,7 +2,7 @@ import http from 'http';
 import { readUsersEndpoint } from './resources/usersResource';
 import { readUserEndpoint } from './resources/usersResource';
 import { createUserEndpoint } from './resources/usersResource';
-// import { updateUserEndpoint } from './resources/usersResource';
+import { updateUserEndpoint } from './resources/usersResource';
 // import { deleteUserEndpoint } from './resources/usersResource';
 import { respondWithHttpError } from './utils/respondWithHttpError';
 import { parseRoute } from './utils/parseEndpoint';
@@ -32,7 +32,7 @@ export const router = async (
     } else if (req.method === 'POST') {
       endpointResult = await createUserEndpoint(db, req);
     } else if (req.method === 'PUT' && userId) {
-      // endpointResult = await updateUserEndpoint(req, res);
+      endpointResult = await updateUserEndpoint(db, req, userId);
     } else if (req.method === 'DELETE' && userId) {
       // endpointResult = await deleteUserEndpoint(req, res);
     } else {

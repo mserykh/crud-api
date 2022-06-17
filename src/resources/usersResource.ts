@@ -1,5 +1,5 @@
 import http from 'http';
-import { createUser, getAllUsers, getUser } from '../services/usersService';
+import { createUser, getAllUsers, getUser, updateUser } from '../services/usersService';
 import { Db, EndpointResult, User } from '../utils/types';
 
 export const readUsersEndpoint = async (db: Db): Promise<EndpointResult<Array<User>>> => {
@@ -48,15 +48,22 @@ export const createUserEndpoint = async (db: Db, req: http.IncomingMessage) => {
   };
 };
 
-// export const updateUserEndpoint = async (db: Db, req: http.IncomingMessage, userId: string) => {
-//   const input = req.read() as User;
-//   const user = await updateUser(db, userId, input);
+export const updateUserEndpoint = async (db: Db, req: http.IncomingMessage, userId: string) => {
+  const buffers = [];
+  for await (const chunk of req) {
+    buffers.push(chunk);
+  }
 
-//   return {
-//     statusCode: 200,
-//     payload: user,
-//   };
-// };
+  const dataRaw = Buffer.concat(buffers).toString();
+  const data = JSON.parse(dataRaw);
+
+  const user = await updateUser(db, data, userId);
+
+  return {
+    statusCode: 200,
+    payload: user,
+  };
+};
 
 // export const deleteUserEndpoint = async (db: Db, userId: string) => {
 //   const result = await deleteUser(db, userId);
