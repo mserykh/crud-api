@@ -2,8 +2,8 @@ import http from 'http';
 import { readUsersEndpoint } from './resources/usersResource';
 import { readUserEndpoint } from './resources/usersResource';
 import { createUserEndpoint } from './resources/usersResource';
-import { updateUserEndpoint } from './resources/usersResource';
-import { deleteUserEndpoint } from './resources/usersResource';
+// import { updateUserEndpoint } from './resources/usersResource';
+// import { deleteUserEndpoint } from './resources/usersResource';
 import { respondWithHttpError } from './utils/respondWithHttpError';
 import { parseRoute } from './utils/parseEndpoint';
 import { Db, EndpointResult } from './utils/types';
@@ -21,7 +21,7 @@ export const router = async (
 
     const [api, users, userId] = parseRoute(endpoint);
 
-    let endpointResult;
+    let endpointResult = {} as EndpointResult<unknown>;
 
     if (api !== 'api' || users !== 'users') {
       return respondWithHttpError(res, 404, 'Not found');
@@ -32,9 +32,9 @@ export const router = async (
     } else if (req.method === 'POST') {
       endpointResult = await createUserEndpoint(db, req);
     } else if (req.method === 'PUT' && userId) {
-      endpointResult = await updateUserEndpoint(req, res);
+      // endpointResult = await updateUserEndpoint(req, res);
     } else if (req.method === 'DELETE' && userId) {
-      endpointResult = await deleteUserEndpoint(req, res);
+      // endpointResult = await deleteUserEndpoint(req, res);
     } else {
       return respondWithHttpError(res, 404, 'Not found');
       // return respondWithHttpError(res, 405, 'HTTP method is not supported');

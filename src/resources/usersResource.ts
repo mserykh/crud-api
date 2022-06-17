@@ -1,9 +1,9 @@
 import http from 'http';
-import { getAllUsers } from '../services/usersService';
+import { createUser, getAllUsers, getUser } from '../services/usersService';
 import { Db, EndpointResult, User } from '../utils/types';
 
 export const readUsersEndpoint = async (db: Db): Promise<EndpointResult<Array<User>>> => {
-  const users = getAllUsers(db);
+  const users = await getAllUsers(db);
 
   return {
     statusCode: 200,
@@ -14,17 +14,33 @@ export const readUsersEndpoint = async (db: Db): Promise<EndpointResult<Array<Us
 export const readUserEndpoint = async (db: Db, userId: string): Promise<EndpointResult<User>> => {
   throwIfInvalid(userId);
 
-  const user = getUser(db, userId);
+  const user = await getUser(db, userId);
 
-  return {
-    statusCode: 200,
-    payload: user,
-  };
+  if (user) {
+    return {
+      statusCode: 200,
+      payload: user,
+    };
+  } else {
+    throwIfNotFound(userId);
+    return {
+      statusCode: 404,
+    };
+  }
 };
 
 export const createUserEndpoint = async (db: Db, req: http.IncomingMessage) => {
-  const input = req.read() as User;
-  const user = createUser(db, input);
+  const buffers = [];
+  for await (const chunk of req) {
+    buffers.push(chunk);
+  }
+
+  const dataRaw = Buffer.concat(buffers).toString();
+  const data = JSON.parse(dataRaw);
+
+  throwIfInvalid(data);
+
+  const user = await createUser(db, data);
 
   return {
     statusCode: 201,
@@ -32,24 +48,27 @@ export const createUserEndpoint = async (db: Db, req: http.IncomingMessage) => {
   };
 };
 
-export const updateUserEndpoint = async (db: Db, req: http.IncomingMessage, userId: string) => {
-  const input = req.read() as User;
-  const user = updateUser(db, userId, input);
+// export const updateUserEndpoint = async (db: Db, req: http.IncomingMessage, userId: string) => {
+//   const input = req.read() as User;
+//   const user = await updateUser(db, userId, input);
 
-  return {
-    statusCode: 200,
-    payload: user,
-  };
-};
+//   return {
+//     statusCode: 200,
+//     payload: user,
+//   };
+// };
 
-export const deleteUserEndpoint = async (db: Db, userId: string) => {
-  const result = deleteUser(db, userId);
+// export const deleteUserEndpoint = async (db: Db, userId: string) => {
+//   const result = await deleteUser(db, userId);
 
-  return {
-    statusCode: result ? 204 : 404,
-  };
-};
+//   return {
+//     statusCode: result ? 204 : 404,
+//   };
+// };
 
 function throwIfInvalid(userId: string) {
   // TODO: implement validation
+}
+function throwIfNotFound(userId: string) {
+  // TODO: implement
 }

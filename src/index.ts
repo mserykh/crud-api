@@ -19,9 +19,9 @@ server.listen(PORT, () => console.log(`Server running on port ${PORT}, process i
 function initDb(): Db {
   const db: Db = {
     users: [
-      { id: '1234560', username: 'User Name', age: 25, hobbies: [] },
-      { id: '1234561', username: 'Name User', age: 55, hobbies: ['painting', 'joking'] },
-      { id: '1234562', username: 'Best Name', age: 35, hobbies: ['jogging'] },
+      { id: '6ba8419c-5642-4d00-9e6c-6bd4822c8415', username: 'User Name', age: 25, hobbies: [] },
+      { id: '045c3012-dba9-4125-a4e8-5c372b77b4c4', username: 'Name User', age: 55, hobbies: ['painting', 'joking'] },
+      { id: '1e38cc46-1256-4cb5-afc6-7e86b907197e', username: 'Best Name', age: 35, hobbies: ['jogging'] },
     ],
   };
 

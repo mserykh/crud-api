@@ -1,14 +1,14 @@
 import crypto from 'crypto';
 import { User } from './types';
 
-class NewUser {
+export default class NewUser {
   id: string;
-  name: string;
+  username: string;
   age: number;
   hobbies: Array<string>;
 
   constructor(data: Omit<User, 'id'>) {
-    this.name = data.username;
+    this.username = data.username;
     this.age = data.age;
     this.hobbies = data.hobbies;
     this.id = crypto.randomUUID();

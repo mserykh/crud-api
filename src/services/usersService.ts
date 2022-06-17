@@ -1,10 +1,16 @@
-import { getAllUsersFromDb } from '../db/usersDb';
+import { createUserToDb, getAllUsersFromDb, getUserFromDb } from '../db/usersDb';
 import { Db, User } from '../utils/types';
 
-export const getAllUsers = (db: Db): Array<User> => {
-  return getAllUsersFromDb(db);
+export const getAllUsers = async (db: Db): Promise<Array<User>> => {
+  return await getAllUsersFromDb(db);
 };
 
-export const getUser = async (db: Db, userId: string): Promise<User> => {
-  return {} as User;
+export const getUser = async (db: Db, userId: string): Promise<User | null> => {
+  const user = await getUserFromDb(db, userId);
+  return user;
+};
+
+export const createUser = async (db: Db, data: User): Promise<User | null> => {
+  const user = await createUserToDb(db, data);
+  return user;
 };
