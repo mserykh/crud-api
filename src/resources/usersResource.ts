@@ -1,5 +1,4 @@
 import http from 'http';
-import crypto from 'crypto';
 import { createUser, deleteUser, getAllUsers, getUser, updateUser } from '../services/usersService';
 import { Db, EndpointResult, User, ValidationError } from '../utils/types';
 
@@ -13,10 +12,9 @@ export const readUsersEndpoint = async (db: Db): Promise<EndpointResult<Array<Us
 };
 
 export const readUserEndpoint = async (db: Db, userId: string): Promise<EndpointResult<User>> => {
-  throwIfInvalid(userId);
+  throwIfInvalidId(userId);
 
   const user = await getUser(db, userId);
-
   if (user) {
     return {
       statusCode: 200,
@@ -39,7 +37,7 @@ export const createUserEndpoint = async (db: Db, req: http.IncomingMessage) => {
   const dataRaw = Buffer.concat(buffers).toString();
   const data = JSON.parse(dataRaw);
 
-  throwIfInvalid(data);
+  throwIfInvalidData(data);
 
   const user = await createUser(db, data);
 
@@ -50,6 +48,17 @@ export const createUserEndpoint = async (db: Db, req: http.IncomingMessage) => {
 };
 
 export const updateUserEndpoint = async (db: Db, req: http.IncomingMessage, userId: string) => {
+  throwIfInvalidId(userId);
+
+  const user = await getUser(db, userId);
+
+  if (!user) {
+    throwIfNotFound();
+    return {
+      statusCode: 404,
+    };
+  }
+
   const buffers = [];
   for await (const chunk of req) {
     buffers.push(chunk);
@@ -58,19 +67,20 @@ export const updateUserEndpoint = async (db: Db, req: http.IncomingMessage, user
   const dataRaw = Buffer.concat(buffers).toString();
   const data = JSON.parse(dataRaw);
 
-  const user = await updateUser(db, data, userId);
+  throwIfInvalidData(data);
+
+  const updatedUser = await updateUser(db, data, userId);
 
   return {
     statusCode: 200,
-    payload: user,
+    payload: updatedUser,
   };
 };
 
 export const deleteUserEndpoint = async (db: Db, userId: string) => {
-  throwIfInvalid(userId);
+  throwIfInvalidId(userId);
 
   const user = await getUser(db, userId);
-
   if (user) {
     await deleteUser(db, userId);
     return {
@@ -84,7 +94,7 @@ export const deleteUserEndpoint = async (db: Db, userId: string) => {
   }
 };
 
-const throwIfInvalid = (userId: string): void => {
+const throwIfInvalidId = (userId: string): void => {
   const regex = /^([a-fA-F0-9]{8})(-([a-fA-F0-9]{4})){3}-([a-fA-F0-9]{12})$/;
   const matches = userId.match(regex);
   if (matches) {
@@ -94,6 +104,22 @@ const throwIfInvalid = (userId: string): void => {
   }
 };
 
-function throwIfNotFound() {
+const throwIfInvalidData = (data: Omit<User, 'id'>): void => {
+  const isUsernameValid = typeof data.username === 'string';
+  const isAgeValid = typeof data.age === 'number';
+  const isHobbiesValid = validateHobbies(data.hobbies);
+
+  if (!isUsernameValid || !isAgeValid || !isHobbiesValid) {
+    throw new ValidationError(400, 'User data is not valid');
+  } else {
+    return;
+  }
+};
+
+const throwIfNotFound = (): void => {
   throw new ValidationError(404, 'User is not found');
-}
+};
+
+const validateHobbies = (hobbies: string[]): boolean => {
+  return Array.isArray(hobbies) && hobbies.every((item) => typeof item === 'string');
+};

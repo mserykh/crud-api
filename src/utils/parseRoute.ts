@@ -17,7 +17,7 @@ export const parseRoute = (url: string): EndpointArgs => {
     return ['api', '', ''];
   }
 
-  const userId = urlToTest.slice(1, urlToTest.length);
+  const userId = urlToTest.slice(1, urlToTest.length).replace('/', '');
 
   return ['api', 'users', userId];
   // const regex =
