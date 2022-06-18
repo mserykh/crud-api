@@ -20,3 +20,13 @@ export type EndpointResult<TPayload> = {
   statusCode: number;
   payload?: TPayload;
 };
+
+export class ValidationError extends Error {
+  statusCode = 400;
+  constructor(statusCode: number, message: string) {
+    super();
+    this.message = message;
+    this.statusCode = statusCode;
+    Object.setPrototypeOf(this, ValidationError.prototype);
+  }
+}

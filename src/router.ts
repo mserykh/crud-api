@@ -5,8 +5,8 @@ import { createUserEndpoint } from './resources/usersResource';
 import { updateUserEndpoint } from './resources/usersResource';
 import { deleteUserEndpoint } from './resources/usersResource';
 import { respondWithHttpError } from './utils/respondWithHttpError';
-import { parseRoute } from './utils/parseEndpoint';
-import { Db, EndpointResult } from './utils/types';
+import { parseRoute } from './utils/parseRoute';
+import { Db, EndpointResult, ValidationError } from './utils/types';
 
 export const router = async (
   db: Db,
@@ -19,7 +19,13 @@ export const router = async (
       return respondWithHttpError(res, 404, 'Not found');
     }
 
-    const [api, users, userId] = parseRoute(endpoint);
+    const endpointArgs = parseRoute(endpoint);
+
+    if (endpointArgs.length > 3) {
+      return respondWithHttpError(res, 404, 'Not found');
+    }
+
+    const [api, users, userId] = endpointArgs;
 
     let endpointResult = {} as EndpointResult<unknown>;
 
@@ -29,7 +35,7 @@ export const router = async (
       endpointResult = await readUsersEndpoint(db);
     } else if (req.method === 'GET' && userId) {
       endpointResult = await readUserEndpoint(db, userId);
-    } else if (req.method === 'POST') {
+    } else if (req.method === 'POST' && !userId) {
       endpointResult = await createUserEndpoint(db, req);
     } else if (req.method === 'PUT' && userId) {
       endpointResult = await updateUserEndpoint(db, req, userId);
@@ -43,9 +49,10 @@ export const router = async (
     return respondWithPayload(res, endpointResult);
   } catch (e) {
     const error = e as Error;
-    console.log(error);
-    const errorMessage = error?.message || 'unknown error';
-    return respondWithHttpError(res, 500, `Server error: ${errorMessage}`);
+    const errorMessage = error?.message || 'Server error: unknown error';
+    const statusCode = error instanceof ValidationError ? error.statusCode : 500;
+
+    return respondWithHttpError(res, statusCode, errorMessage);
   }
 };
 

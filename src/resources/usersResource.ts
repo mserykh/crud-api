@@ -1,6 +1,7 @@
 import http from 'http';
+import crypto from 'crypto';
 import { createUser, deleteUser, getAllUsers, getUser, updateUser } from '../services/usersService';
-import { Db, EndpointResult, User } from '../utils/types';
+import { Db, EndpointResult, User, ValidationError } from '../utils/types';
 
 export const readUsersEndpoint = async (db: Db): Promise<EndpointResult<Array<User>>> => {
   const users = await getAllUsers(db);
@@ -22,7 +23,7 @@ export const readUserEndpoint = async (db: Db, userId: string): Promise<Endpoint
       payload: user,
     };
   } else {
-    throwIfNotFound(userId);
+    throwIfNotFound();
     return {
       statusCode: 404,
     };
@@ -76,17 +77,23 @@ export const deleteUserEndpoint = async (db: Db, userId: string) => {
       statusCode: 204,
     };
   } else {
-    throwIfNotFound(userId);
+    throwIfNotFound();
     return {
       statusCode: 404,
     };
   }
 };
 
-function throwIfInvalid(userId: string) {
-  // TODO: implement validation
-}
+const throwIfInvalid = (userId: string): void => {
+  const regex = /^([a-fA-F0-9]{8})(-([a-fA-F0-9]{4})){3}-([a-fA-F0-9]{12})$/;
+  const matches = userId.match(regex);
+  if (matches) {
+    return;
+  } else {
+    throw new ValidationError(400, 'User id is not valid');
+  }
+};
 
-function throwIfNotFound(userId: string) {
-  // TODO: implement
+function throwIfNotFound() {
+  throw new ValidationError(404, 'User is not found');
 }
