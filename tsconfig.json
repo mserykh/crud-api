@@ -1,12 +1,18 @@
 {
   "compilerOptions": {
-    "target": "es2018",
-    "module": "es6",
-    "outDir": "./dist",
+    "target": "es5",
+    "module": "CommonJS",
+    "rootDir": "./src",
     "sourceMap": true,
-    "noImplicitAny": true,
-    "strict": true
+    "outDir": "./dist",
+    "baseUrl": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "Node"
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "ts-node": {
+    "esm": true
+  },
+  "include": ["src/**/*.ts", "src/index.ts"],
+  "exclude": ["node_modules", "dist", "__test__"]
 }
