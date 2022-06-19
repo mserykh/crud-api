@@ -41,9 +41,15 @@ export const router = async (
       endpointResult = await updateUserEndpoint(db, req, userId);
     } else if (req.method === 'DELETE' && userId) {
       endpointResult = await deleteUserEndpoint(db, userId);
-    } else {
-      //return respondWithHttpError(res, 404, 'Not found');
+    } else if (
+      req.method !== 'GET' &&
+      req.method !== 'POST' &&
+      req.method !== 'PUT' &&
+      req.method !== 'DELETE'
+    ) {
       return respondWithHttpError(res, 405, 'HTTP method is not supported');
+    } else {
+      return respondWithHttpError(res, 404, 'Not found');
     }
 
     return respondWithPayload(res, endpointResult);

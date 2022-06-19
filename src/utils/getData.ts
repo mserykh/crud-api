@@ -1,5 +1,4 @@
 import http from 'http';
-import { User } from './types';
 
 export const getData = async (req: http.IncomingMessage): Promise<string> => {
   return new Promise(async (resolve) => {

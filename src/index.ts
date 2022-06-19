@@ -1,6 +1,5 @@
 import http from 'http';
 import { router } from './router';
-import { respondWithHttpError } from './utils/respondWithHttpError';
 import { Db } from './utils/types';
 
 const PORT = process.env.PORT || 5000;
@@ -31,7 +30,7 @@ function initDb(): Db {
       {
         id: '8a5cb31e-05df-4b5e-a05c-1718424c4072',
         username: 'Snufkin',
-        age: 42,
+        age: 18,
         hobbies: ['fishing', 'adventures', 'playing the harmonica'],
       },
     ],
