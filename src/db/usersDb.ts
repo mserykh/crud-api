@@ -34,7 +34,7 @@ export const updateUserFromDb = (db: Db, data: User, userId: string): Promise<Us
   return new Promise((resolve) => {
     const index = db.users.findIndex((user) => user.id === userId);
     if (index > -1) {
-      db.users[index] = { ...data };
+      db.users[index] = { ...db.users[index], ...data };
       const updateUser = db.users[index];
       resolve(updateUser);
     } else {
