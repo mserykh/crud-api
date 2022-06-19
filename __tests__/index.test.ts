@@ -2,37 +2,25 @@ import http from 'http';
 import crypto from 'crypto';
 import request from 'supertest';
 import { router } from '../src/router';
+import { Db } from '../src/utils/types';
 
 describe('CRUD tests', () => {
-  const db = {
-    users: [
-      {
-        id: 'a1e6c5a6-d4b9-478d-bbe4-769b9379d9cc',
-        username: 'Moominpappa',
-        age: 43,
-        hobbies: ['writing'],
-      },
-      {
-        id: '8a5cb31e-05df-4b5e-a05c-1718424c4072',
-        username: 'Little My',
-        age: 12,
-        hobbies: ['debating', 'sliding'],
-      },
-      {
-        id: '8a5cb31e-05df-4b5e-a05c-1718424c4072',
-        username: 'Snufkin',
-        age: 42,
-        hobbies: ['fishing', 'adventures', 'playing the harmonica'],
-      },
-    ],
+  const db: Db = {
+    users: [],
   };
+
+  beforeEach(() => {
+    db.users = [];
+  });
+
+  beforeEach(() => {});
 
   const server = http.createServer(async (req, res) => {
     await router(db, req, res);
   });
-  server.listen(process.env.PORT || 5000);
+  server.listen(process.env.port || 5000);
 
-  afterAll(() => server.close());
+  afterEach(() => server.close());
 
   it('test scenario 1', async () => {
     const newUser = {
@@ -42,7 +30,7 @@ describe('CRUD tests', () => {
     };
     const response = await request(server).get('/api/users');
     expect(response.statusCode).toBe(200);
-    expect(response.body.length).toBe(3);
+    expect(response.body.length).toBe(0);
 
     const responseWithNewUser = await request(server).post('/api/users').send(newUser);
     expect(responseWithNewUser.statusCode).toBe(201);
@@ -73,6 +61,28 @@ describe('CRUD tests', () => {
   });
 
   it('test scenario 2', async () => {
+    db.users = [
+      ...db.users,
+      {
+        id: 'a1e6c5a6-d4b9-478d-bbe4-769b9379d9cc',
+        username: 'Moominpappa',
+        age: 43,
+        hobbies: ['writing'],
+      },
+      {
+        id: '8a5cb31e-05df-4b5e-a05c-1718424c4072',
+        username: 'Little My',
+        age: 12,
+        hobbies: ['debating', 'sliding'],
+      },
+      {
+        id: '8a5cb31e-05df-4b5e-a05c-1718424c4072',
+        username: 'Snufkin',
+        age: 42,
+        hobbies: ['fishing', 'adventures', 'playing the harmonica'],
+      },
+    ];
+
     const newUser = {
       username: 'Moominmamma',
       age: 36,
@@ -112,29 +122,40 @@ describe('CRUD tests', () => {
   });
 
   it('test scenario 3', async () => {
-    const newUser = {
-      username: 'Moominmamma',
-      hobbies: ['helping others', 'making journeys'],
-    };
-    const response = await request(server).get('/api/users');
+    db.users = [
+      ...db.users,
+      {
+        id: 'a1e6c5a6-d4b9-478d-bbe4-769b9379d9cc',
+        username: 'Moominpappa',
+        age: 43,
+        hobbies: ['writing'],
+      },
+      {
+        id: '8a5cb31e-05df-4b5e-a05c-1718424c4072',
+        username: 'Little My',
+        age: 12,
+        hobbies: ['debating', 'sliding'],
+      },
+      {
+        id: '8a5cb31e-05df-4b5e-a05c-1718424c4072',
+        username: 'Snufkin',
+        age: 42,
+        hobbies: ['fishing', 'adventures', 'playing the harmonica'],
+      },
+    ];
+
+    const user = db.users[1];
+
+    const response = await request(server).get(`/api/users/${user.id}`);
     expect(response.statusCode).toBe(200);
-    expect(response.body.length).toBe(4);
 
-    const responsePostWithInvalidUser = await request(server).post('/api/users').send(newUser);
-    expect(responsePostWithInvalidUser.statusCode).toBe(400);
-
-    const updatedNewUser = {
-      username: 'Moominmamma',
-      age: 36,
-      hobbies: ['helping others', 'making journeys'],
-    };
+    const updatedUser = { ...user, age: 44 };
 
     const responsePutWithValidNewUser = await request(server)
-      .post(`/api/users/`)
-      .send(updatedNewUser);
-    expect(responsePutWithValidNewUser.statusCode).toBe(201);
-    const id = responsePutWithValidNewUser.body.id;
-    expect(responsePutWithValidNewUser.body).toEqual({ ...updatedNewUser, id });
+      .put(`/api/users/${user.id}`)
+      .send(updatedUser);
+    expect(responsePutWithValidNewUser.statusCode).toBe(200);
+    expect(responsePutWithValidNewUser.body).toEqual(updatedUser);
 
     const newID = 'notUuid';
 
