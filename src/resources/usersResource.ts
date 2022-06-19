@@ -1,4 +1,5 @@
 import http from 'http';
+import { getData } from '../utils/getData';
 import { createUser, deleteUser, getAllUsers, getUser, updateUser } from '../services/usersService';
 import { Db, EndpointResult, User, ValidationError } from '../utils/types';
 
@@ -29,12 +30,7 @@ export const readUserEndpoint = async (db: Db, userId: string): Promise<Endpoint
 };
 
 export const createUserEndpoint = async (db: Db, req: http.IncomingMessage) => {
-  const buffers = [];
-  for await (const chunk of req) {
-    buffers.push(chunk);
-  }
-
-  const dataRaw = Buffer.concat(buffers).toString();
+  const dataRaw = await getData(req);
   const data = JSON.parse(dataRaw);
 
   throwIfInvalidData(data);
@@ -58,13 +54,7 @@ export const updateUserEndpoint = async (db: Db, req: http.IncomingMessage, user
       statusCode: 404,
     };
   }
-
-  const buffers = [];
-  for await (const chunk of req) {
-    buffers.push(chunk);
-  }
-
-  const dataRaw = Buffer.concat(buffers).toString();
+  const dataRaw = await getData(req);
   const data = JSON.parse(dataRaw);
 
   throwIfInvalidData(data);
